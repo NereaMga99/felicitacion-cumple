@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feliz Cumpleaños</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#241528;
+    --paper:#FFF8EC;
+    --ink:#2B1C1F;
+    --accent-focus:#FFC857;
+  }
+
+  *{ box-sizing:border-box; }
+
+  html,body{
+    margin:0;
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 15% 18%, rgba(255,200,87,.14), transparent 40%),
+      radial-gradient(circle at 85% 78%, rgba(255,111,89,.16), transparent 45%),
+      radial-gradient(circle at 50% 100%, rgba(99,183,232,.10), transparent 50%),
+      var(--bg);
+    font-family:'Quicksand', sans-serif;
+    color:var(--paper);
+  }
+
+  body.no-scroll{ overflow:hidden; }
+
+  header{
+    position:relative;
+    z-index:2;
+    text-align:center;
+    padding: 4rem 1.5rem 1rem;
+  }
+
+  h1{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800;
+    font-size: clamp(2rem, 6vw, 3.3rem);
+    margin: 0 0 .7rem;
+  }
+
+  .subtitle{
+    max-width: 480px;
+    margin: 0 auto;
+    color: rgba(255,248,236,.75);
+    font-size: 1.05rem;
+    line-height:1.5;
+  }
+
+  .sound-btn{
+    margin-top: 1rem;
+    font-family:'Quicksand', sans-serif;
+    font-weight:700;
+    font-size: .95rem;
+    color: var(--ink);
+    background: var(--accent-focus);
+    border:none;
+    border-radius: 999px;
+    padding: .6rem 1.3rem;
+    cursor:pointer;
+    box-shadow: 0 6px 16px rgba(0,0,0,.3);
+    transition: transform .2s ease, background .2s ease;
+  }
+  .sound-btn:hover{ transform: translateY(-2px); }
+  .sound-btn.is-on{ background: #6FCF97; }
+  .sound-btn:focus-visible{ outline:3px solid var(--paper); outline-offset:3px; }
+
+  .mail-table{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 3rem 1.6rem;
+    max-width: 1040px;
+    margin: 3rem auto 0;
+    padding: 0 1.5rem 4rem;
+    position:relative;
+    z-index:2;
+  }
+
+  .envelope-card{
+    background:none;
+    border:none;
+    padding:0;
+    cursor:pointer;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:.9rem;
+    transform: rotate(var(--rot));
+    transition: transform .25s ease;
+  }
+
+  .envelope-card:hover,
+  .envelope-card:focus-visible{
+    transform: rotate(calc(var(--rot) - 3deg)) translateY(-10px) scale(1.04);
+  }
+
+  .envelope-card:focus-visible{
+    outline: 3px solid var(--accent-focus);
+    outline-offset: 6px;
+    border-radius: 10px;
+  }
+
+  .envelope-card__body{
+    position:relative;
+    width: 208px;
+    height: 142px;
+    border-radius: 8px;
+    background: var(--env-color);
+    box-shadow: 0 14px 28px rgba(0,0,0,.4);
+    animation: floatBob 3.6s ease-in-out infinite;
+    animation-delay: var(--float-delay, 0s);
+  }
+
+  .envelope-card__body::after{
+    content:"";
+    position:absolute;
+    inset: 8px;
+    border-radius:5px;
+    border: 2px dashed rgba(255,255,255,.45);
+    pointer-events:none;
+  }
+
+  .envelope-card__flap{
+    position:absolute;
+    inset:0;
+    background: var(--env-flap);
+    clip-path: polygon(0 0, 100% 0, 50% 62%);
+  }
+
+  .envelope-card__bow{
+    position:absolute;
+    top: 55%; left:50%;
+    transform: translate(-50%,-50%);
+    width: 26px; height:16px;
+    z-index:1;
+  }
+  .envelope-card__bow::before,
+  .envelope-card__bow::after{
+    content:"";
+    position:absolute;
+    top:0; width:14px; height:14px;
+    background: var(--paper);
+    border-radius: 50% 50% 50% 0;
+    opacity:.9;
+  }
+  .envelope-card__bow::before{ left:0; transform: rotate(-40deg); }
+  .envelope-card__bow::after{ right:0; transform: rotate(40deg) scaleX(-1); }
+
+  .envelope-card__seal{
+    position:absolute;
+    top:50%; left:50%;
+    transform: translate(-50%,-50%);
+    width: 46px; height:46px;
+    border-radius:50%;
+    background: var(--paper);
+    color: var(--ink);
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    font-size: 1.3rem;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow: inset 0 0 0 2px rgba(0,0,0,.08), 0 0 0 4px rgba(255,255,255,.18);
+    z-index:2;
+  }
+
+  .envelope-card__sparkle{
+    position:absolute;
+    width:10px; height:10px;
+    color: var(--paper);
+    opacity:0;
+    animation: twinkle 2.6s ease-in-out infinite;
+    animation-delay: var(--spark-delay, 0s);
+    pointer-events:none;
+  }
+  .envelope-card__sparkle::before{ content:"✦"; position:absolute; inset:0; font-size:1rem; line-height:1; }
+  .envelope-card__sparkle--a{ top:-10px; right:6px; }
+  .envelope-card__sparkle--b{ bottom:-8px; left:-4px; font-size:.7rem; }
+
+  .envelope-card__label{
+    font-weight:600;
+    font-size:1.02rem;
+    color: var(--paper);
+    text-align:center;
+  }
+
+  @keyframes floatBob{
+    0%, 100%{ transform: translateY(0) rotate(0deg); }
+    50%{ transform: translateY(-9px) rotate(1.5deg); }
+  }
+
+  @keyframes twinkle{
+    0%, 100%{ opacity:0; transform: scale(.6) rotate(0deg); }
+    50%{ opacity:1; transform: scale(1.15) rotate(15deg); }
+  }
+
+  /* Overlay */
+  .overlay{
+    position:fixed; inset:0;
+    background: rgba(15,8,20,.84);
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; pointer-events:none;
+    transition: opacity .3s ease;
+    z-index:50;
+  }
+  .overlay.is-open{ opacity:1; pointer-events:auto; }
+
+  #confettiCanvas{
+    position:fixed; inset:0;
+    pointer-events:none;
+    z-index:60;
+  }
+
+  .letter-scene{
+    position:relative;
+    z-index:55;
+  }
+
+  .close-btn{
+    position:absolute;
+    top:-3.2rem; right:0;
+    background:none; border:none;
+    color: var(--paper);
+    font-size:1.7rem;
+    line-height:1;
+    width:2.4rem; height:2.4rem;
+    cursor:pointer;
+  }
+  .close-btn:focus-visible{
+    outline:2px solid var(--paper);
+    border-radius:50%;
+  }
+
+  .envelope-open{
+    position:relative;
+    width:min(92vw, 560px);
+    height:min(80vh, 480px);
+    transform-style: preserve-3d;
+  }
+
+  .envelope-open::before{
+    content:"";
+    position:absolute; inset:0;
+    background: var(--env-color);
+    border-radius:8px;
+    z-index:1;
+  }
+
+  .envelope-open .flap{
+    position:absolute;
+    top:0; left:0;
+    width:100%; height:58%;
+    background: var(--env-flap);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transform-origin: top center;
+    transform: rotateX(0deg);
+    backface-visibility: hidden;
+    transition: transform .6s ease;
+    z-index:3;
+  }
+  .envelope-open.opened .flap{
+    transform: rotateX(180deg);
+  }
+
+  .paper{
+    position:absolute;
+    left:6%; right:6%;
+    top:10%; bottom:10%;
+    background:
+      radial-gradient(rgba(43,28,31,.07) 1.5px, transparent 1.5px) 0 0/16px 16px,
+      var(--paper);
+    border-radius:8px;
+    border: 3px dashed var(--env-color, var(--accent-focus));
+    box-shadow: 0 20px 40px rgba(0,0,0,.4);
+    transform: translateY(44%) rotate(-1.5deg);
+    transition: transform .7s cubic-bezier(.34,1.56,.64,1) .18s;
+    z-index:2;
+  }
+  .envelope-open.opened .paper{
+    transform: translateY(4%) rotate(0deg);
+  }
+
+  .paper-inner{
+    position:absolute;
+    inset:0;
+    padding: 2.2rem 2rem 1.8rem;
+    overflow-y:auto;
+    border-radius:8px;
+  }
+
+  .paper::before{
+    content:"🎂";
+    position:absolute;
+    top:-16px; right:18px;
+    width:34px; height:34px;
+    border-radius:50%;
+    background: var(--env-color, var(--accent-focus));
+    color: var(--paper);
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.3rem;
+    box-shadow: 0 6px 14px rgba(0,0,0,.35);
+  }
+
+  .paper-from{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    color: var(--ink);
+    margin: 0 0 .6rem;
+  }
+
+  .paper-message{
+    color: var(--ink);
+    line-height:1.6;
+    font-size: 1.05rem;
+    margin:0;
+    white-space:pre-line;
+  }
+
+  .bunting{
+    position:absolute;
+    top:-2.6rem; left:50%;
+    transform: translateX(-50%);
+    width: 240px;
+    display:flex;
+    justify-content:space-between;
+  }
+  .bunting span{
+    width: 26px; height:32px;
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    animation: buntingSway 2.6s ease-in-out infinite;
+    transform-origin: top center;
+  }
+  .bunting span:nth-child(1){ background:#FF6F59; animation-delay:0s; }
+  .bunting span:nth-child(2){ background:#FFC857; animation-delay:.15s; }
+  .bunting span:nth-child(3){ background:#FF9FB2; animation-delay:.3s; }
+  .bunting span:nth-child(4){ background:#6FCF97; animation-delay:.45s; }
+  .bunting span:nth-child(5){ background:#63B7E8; animation-delay:.6s; }
+
+  @keyframes buntingSway{
+    0%, 100%{ transform: rotate(-4deg); }
+    50%{ transform: rotate(4deg); }
+  }
+
+  .scene-sparkle{
+    position:absolute;
+    color: var(--paper);
+    font-size:1.4rem;
+    opacity:0;
+    animation: twinkle 2.4s ease-in-out infinite;
+    pointer-events:none;
+  }
+  .scene-sparkle--a{ top:-8px; left:-18px; animation-delay:.2s; color:#FFC857; }
+  .scene-sparkle--b{ bottom:10%; right:-20px; font-size:1rem; animation-delay:.9s; color:#FF9FB2; }
+  .scene-sparkle--c{ top:30%; left:-26px; font-size:.9rem; animation-delay:1.5s; color:#6FCF97; }
+
+  .bg-decor{
+    position:fixed;
+    inset:0;
+    overflow:hidden;
+    z-index:0;
+    pointer-events:none;
+  }
+
+  .balloon{
+    position:absolute;
+    bottom:-160px;
+    width:58px; height:74px;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    opacity:.5;
+    animation: floatUp linear infinite;
+  }
+  .balloon::after{
+    content:"";
+    position:absolute;
+    left:50%; bottom:-38px;
+    width:2px; height:38px;
+    background: rgba(255,255,255,.35);
+    transform: translateX(-50%);
+  }
+
+  .star{
+    position:absolute;
+    width:5px; height:5px;
+    background:#fff;
+    border-radius:50%;
+    opacity:0;
+    animation: twinkleStar ease-in-out infinite;
+  }
+
+  @keyframes floatUp{
+    0%{ transform: translateY(0) translateX(0) rotate(-4deg); }
+    50%{ transform: translateY(-55vh) translateX(18px) rotate(4deg); }
+    100%{ transform: translateY(-118vh) translateX(-14px) rotate(-4deg); }
+  }
+
+  @keyframes twinkleStar{
+    0%, 100%{ opacity:0; transform: scale(.7); }
+    50%{ opacity:.9; transform: scale(1.3); }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{
+      transition-duration: .01ms !important;
+      animation-duration: .01ms !important;
+    }
+    .balloon, .star, .envelope-card__body, .envelope-card__sparkle{
+      animation: none !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <div class="bg-decor" aria-hidden="true">
+    <div class="balloon" style="left:6%;  background:#FF6F59; animation-duration:16s; animation-delay:0s;"></div>
+    <div class="balloon" style="left:18%; background:#63B7E8; animation-duration:19s; animation-delay:3s;  width:46px; height:60px;"></div>
+    <div class="balloon" style="left:32%; background:#FFC857; animation-duration:14s; animation-delay:6s;"></div>
+    <div class="balloon" style="left:62%; background:#6FCF97; animation-duration:18s; animation-delay:1.5s; width:50px; height:64px;"></div>
+    <div class="balloon" style="left:78%; background:#FF9FB2; animation-duration:15s; animation-delay:4.5s;"></div>
+    <div class="balloon" style="left:90%; background:#FF6F59; animation-duration:20s; animation-delay:8s; width:44px; height:58px;"></div>
+
+    <div class="star" style="top:12%; left:20%; animation-duration:2.4s; animation-delay:0s;"></div>
+    <div class="star" style="top:22%; left:70%; animation-duration:3.1s; animation-delay:.6s;"></div>
+    <div class="star" style="top:8%;  left:85%; animation-duration:2.8s; animation-delay:1.2s;"></div>
+    <div class="star" style="top:30%; left:8%;  animation-duration:3.4s; animation-delay:1.8s;"></div>
+    <div class="star" style="top:16%; left:48%; animation-duration:2.6s; animation-delay:2.2s;"></div>
+    <div class="star" style="top:35%; left:60%; animation-duration:3s;   animation-delay:.9s;"></div>
+  </div>
+
+  <header>
+    <h1>¡Feliz cumpleaños, <span id="birthdayName">Jessy</span>!</h1>
+    <p class="subtitle">Abre tus felicitaciones de cumpleaños de parte de las personas que te quieren muchísimo!</p>
+    <p class="subtitle">Pero primero... DALE A LA MÚSICAAAAAA!</p>
+
+    <button class="sound-btn" id="soundBtn">🎵 Reproducir música</button>
+  </header>
+
+  <div class="mail-table" id="mailTable"></div>
+
+  <div class="overlay" id="overlay">
+    <canvas id="confettiCanvas"></canvas>
+    <div class="letter-scene">
+      <div class="bunting" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <button class="close-btn" id="closeBtn" aria-label="Cerrar">✕</button>
+      <div class="envelope-open" id="envelopeOpen">
+        <div class="flap"></div>
+        <div class="paper">
+          <div class="paper-inner">
+            <p class="paper-from" id="paperFrom">De: Nombre</p>
+            <p class="paper-message" id="paperMessage">Mensaje…</p>
+          </div>
+        </div>
+        <span class="scene-sparkle scene-sparkle--a" aria-hidden="true">✦</span>
+        <span class="scene-sparkle scene-sparkle--b" aria-hidden="true">✦</span>
+        <span class="scene-sparkle scene-sparkle--c" aria-hidden="true">✦</span>
+      </div>
+    </div>
+  </div>
+
+<script>
+
+const BIRTHDAY_NAME = "Jessy";
+
+const SENDERS = [
+  { name: "Nerea", message: `Feliz cumpleaños a la persona más fuerte y más decidida que conozco! ❤️
+  Bueno por donde empezar... Que suerte la tuya de tener una persona tan genial, divertida y encantadora como yo en tu vida... JAJAJ es bromaa!  Suerte la mía de tenerte a ti como hermana.
+  Un nuevo año de vida, nuevas experiencias y nuevos retos por vivir pero estoy segura de que venga lo que te venga los vas a superar todos porque esa es Jessica Magaña, una persona luchadora, fuerte, honesta, divertida y demasiado buena diría yo. 
+  Nunca jamás cambies porque personas como tú hay pocas y que nada ni nadie te quite la sonrisa.
+  Siempre me vas a tener aquí apoyándote en todo incondicionalmente.
+  Te quieroo!!!! ❤️😘` },
+  { name: "Nombre", message: `¡Feliz cumpleaños, {{NOMBRE}}! Escribe aquí tu mensaje para esta persona tan especial.` },
+  { name: "Carmen", message: `Feliz cumpleaños a una de las personas más fuertes, valientes y luchadoras que conozco. ❤️ 
+  A ti, que aunque la vida te ponga obstáculos, siempre encuentras la manera de levantarte y seguir hacia delante. Que has demostrado mil veces que puedes con todo, incluso cuando parece que ya no quedan fuerzas.
+  Admiro muchísimo esa forma tuya de luchar, de no rendirte y de sacar adelante todo lo que te propones. Pero, sobre todo, admiro el corazón tan grande que tienes y la persona que eres.
+  Hoy solo deseo que la vida te devuelva, multiplicado por mil, todo lo bueno que tú das a los demás. Que tengas salud, amor, momentos felices y muchos motivos para sonreír. Y que nunca olvides que, pase lo que pase, aquí tienes a tu amiga para caminar contigo. 🥰
+  Te quiero amiga. ❤️
+  Feliz cumpleaños, guerrera. 🎂🥂✨` },
+  { name: "Nany", message: `Feliz cumpleaños amiga. 
+  Espero que la vida te dé multiplicado todo lo bonito que das. Gracias por ser como eres, por estar siempre y gracias sobretodo por haber aparecido en mi vida.
+  Te quiero muchísimo, Nany. ❤️` },
+  { name: "Belly", message: `Feliz Cumpleaños! ❤️ Que este nuevo año de vida venga cargado de salud, felicidad, amor, prosperidad, éxitos y todo lo bonito que tu corazón desea.
+  Que cada día sea una nueva oportunidad para sonreír, para disfrutar, para ser feliz y para cumplir tus sueños. Que la vida te regale momentos inolvidables, personas que te quieran
+  de  verdad y toda la luz que mereces.
+  Gracias por ser tan especial, por tu amistad, por tu cariño y por estar siempre. ❤️
+  Disfruta mucho de tu día... Hoy y siempre. ❤️` },
+  { name: "Johnny", message: `My beautiful ❤️ 
+  After 10 years together, I still look at you and feel so lucky to have you in my life. We’ve been through so much together, and somehow along the way we’ve created the most beautiful thing of all — our two amazing little girls. 
+  You really are the love of my life. You’re crazy, stubborn, funny, loving and one of the hardest-working people I know 😂❤️. Life with you is never boring, and I honestly wouldn’t want it any other way. 
+  Thank you for everything you do for us and for the love you give our family. I hope you know how much you mean to me, even if I don’t always say it enough.
+  I love you more than words can explain, and after 10 years, I’d still choose you all over again.
+  Have an amazing day, beautiful. ❤️😘` },
+  { name: "Lisett", message: `Perra del mismísimo infierno!!! La reina del infierno!! Jajajaja muchas felicidades!! 
+  Las palabras se quedan cortas para desearte un feliz cumpleaños! Aunque estés lejos, queremos que te sientas cerca de nosotros y gracias a la tecnología lo hace más fácil, disfruta de este nuevo año de vida, que sigas así, y que te quiero un montón!! 
+  Muchos besos enorme y un gran abrazo inmenso!!! ❤️` },
+  { name: "Lara", message: `Feliz cumpleaños Jessica!!
+  Que sigas cumpliendo muchísimos años más, que yo los vea y que nuestra amistad dure para toda la vida.
+  Sigue así, sacando todo lo que te propones, que lo vas a conseguir porque eres una mujer muy fuerte y eres maravillosa.
+  Un beso muy fuerte y felicidades cariño mío. 😘` }
+];
+
+/* Lógica de la tarjeta. */
+
+const ROTATIONS = [-4, 3, -2, 5, -3, 2, 4];
+const PALETTE = [
+  { bg: "#FF6F59", flap: "#E0503B" },
+  { bg: "#FFC857", flap: "#E0A93A" },
+  { bg: "#FF9FB2", flap: "#E6748C" },
+  { bg: "#6FCF97", flap: "#4FAF77" },
+  { bg: "#63B7E8", flap: "#3D93C9" },
+  { bg: "#B084CC", flap: "#8C5FA8" },
+  { bg: "#FF9F5A", flap: "#E07D33" },
+  { bg: "#5AD1C4", flap: "#35A99C" }
+];
+
+const mailTable = document.getElementById("mailTable");
+const overlay = document.getElementById("overlay");
+const envelopeOpenEl = document.getElementById("envelopeOpen");
+const closeBtn = document.getElementById("closeBtn");
+const paperFrom = document.getElementById("paperFrom");
+const paperMessage = document.getElementById("paperMessage");
+const canvas = document.getElementById("confettiCanvas");
+const ctx2d = canvas.getContext("2d");
+
+document.getElementById("birthdayName").textContent = BIRTHDAY_NAME;
+
+function renderMailTable(){
+  SENDERS.forEach((sender, idx) => {
+    const palette = PALETTE[idx % PALETTE.length];
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "envelope-card";
+    card.style.setProperty("--rot", ROTATIONS[idx % ROTATIONS.length] + "deg");
+    card.style.setProperty("--env-color", palette.bg);
+    card.style.setProperty("--env-flap", palette.flap);
+    card.style.setProperty("--float-delay", (idx * 0.35) + "s");
+    card.style.setProperty("--spark-delay", (idx * 0.4) + "s");
+    card.innerHTML = `
+      <span class="envelope-card__body">
+        <span class="envelope-card__flap"></span>
+        <span class="envelope-card__bow"></span>
+        <span class="envelope-card__seal">${(sender.name.trim()[0] || "?").toUpperCase()}</span>
+        <span class="envelope-card__sparkle envelope-card__sparkle--a"></span>
+        <span class="envelope-card__sparkle envelope-card__sparkle--b"></span>
+      </span>
+      <span class="envelope-card__label">De: ${sender.name}</span>
+    `;
+    card.addEventListener("click", () => openEnvelope(idx));
+    mailTable.appendChild(card);
+  });
+}
+
+function openEnvelope(idx){
+  const sender = SENDERS[idx];
+  const palette = PALETTE[idx % PALETTE.length];
+
+  paperFrom.textContent = `De: ${sender.name}`;
+  paperMessage.textContent = sender.message.split("{{NOMBRE}}").join(BIRTHDAY_NAME);
+  envelopeOpenEl.style.setProperty("--env-color", palette.bg);
+  envelopeOpenEl.style.setProperty("--env-flap", palette.flap);
+
+  envelopeOpenEl.classList.remove("opened");
+  overlay.classList.add("is-open");
+  document.body.classList.add("no-scroll");
+
+  void envelopeOpenEl.offsetWidth; // reinicia la animación cada vez
+  requestAnimationFrame(() => envelopeOpenEl.classList.add("opened"));
+
+  setTimeout(() => {
+    burstConfetti();
+  }, 550);
+}
+
+function closeOverlay(){
+  overlay.classList.remove("is-open");
+  document.body.classList.remove("no-scroll");
+  confettiParticles = [];
+  if (confettiAnimId){ cancelAnimationFrame(confettiAnimId); confettiAnimId = null; }
+  ctx2d.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+closeBtn.addEventListener("click", closeOverlay);
+overlay.addEventListener("click", (e) => { if (e.target === overlay) closeOverlay(); });
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && overlay.classList.contains("is-open")) closeOverlay();
+});
+
+/* Confeti */
+
+let confettiParticles = [];
+let confettiAnimId = null;
+
+function resizeCanvas(){
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
+
+function burstConfetti(){
+  const colors = PALETTE.map(p => p.bg);
+  confettiParticles = [];
+  for (let i = 0; i < 140; i++){
+    confettiParticles.push({
+      x: Math.random() * canvas.width,
+      y: -20 - Math.random() * canvas.height * 0.3,
+      w: 6 + Math.random() * 6,
+      h: 8 + Math.random() * 10,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      speedY: 2 + Math.random() * 3,
+      speedX: (Math.random() - 0.5) * 2,
+      rot: Math.random() * 360,
+      rotSpeed: (Math.random() - 0.5) * 10,
+      life: 0
+    });
+  }
+  if (!confettiAnimId) animateConfetti();
+}
+
+function animateConfetti(){
+  ctx2d.clearRect(0, 0, canvas.width, canvas.height);
+  let stillAlive = false;
+  confettiParticles.forEach(p => {
+    p.x += p.speedX;
+    p.y += p.speedY;
+    p.rot += p.rotSpeed;
+    p.life++;
+    if (p.y < canvas.height + 20 && p.life < 480) stillAlive = true;
+    ctx2d.save();
+    ctx2d.translate(p.x, p.y);
+    ctx2d.rotate((p.rot * Math.PI) / 180);
+    ctx2d.fillStyle = p.color;
+    ctx2d.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+    ctx2d.restore();
+  });
+  confettiAnimId = stillAlive ? requestAnimationFrame(animateConfetti) : null;
+  if (!stillAlive) ctx2d.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+/* Melodía */
+
+const NOTE_FREQ = {
+  A4: 440.00, B4: 493.88,
+  C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46, G5: 783.99,
+  A5: 880.00, "A#5": 932.33, B5: 987.77,
+  C6: 1046.50
+};
+
+// Melodía de "Cumpleaños feliz" representada como [nota, duración en tiempos]
+const MELODY = [
+  ["C5", 0.5], ["C5", 0.5], ["D5", 1], ["C5", 1], ["F5", 1], ["E5", 2],
+  ["C5", 0.5], ["C5", 0.5], ["D5", 1], ["C5", 1], ["G5", 1], ["F5", 2],
+  ["C5", 0.5], ["C5", 0.5], ["C6", 1], ["A5", 1], ["F5", 1], ["E5", 1], ["D5", 2],
+  ["A#5", 0.5], ["A#5", 0.5], ["A5", 1], ["F5", 1], ["G5", 1], ["F5", 2]
+];
+
+// Segunda voz en terceras por debajo, para que suene más animada y llena
+const HARMONY_THIRD = {
+  C5: "A4", D5: "B4", E5: "C5", F5: "D5",
+  G5: "E5", A5: "F5", "A#5": "G5", C6: "A5"
+};
+
+let audioCtx = null;
+let activeOscillators = [];
+
+function playNote(freq, startTime, duration, type, peakGain){
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+
+  gain.gain.setValueAtTime(0, startTime);
+  gain.gain.linearRampToValueAtTime(peakGain, startTime + 0.02);
+  gain.gain.setValueAtTime(peakGain, startTime + Math.max(duration - 0.05, 0.02));
+  gain.gain.linearRampToValueAtTime(0, startTime + duration);
+
+  osc.connect(gain).connect(audioCtx.destination);
+  osc.start(startTime);
+  osc.stop(startTime + duration + 0.02);
+  activeOscillators.push(osc);
+}
+
+function playMelody(){
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === "suspended") audioCtx.resume();
+  stopMelody();
+
+  const beat = 0.28; // más rápido = más animada
+  let t = audioCtx.currentTime + 0.05;
+  MELODY.forEach(([note, beats]) => {
+    const dur = beats * beat;
+    playNote(NOTE_FREQ[note], t, dur, "triangle", 0.28);
+    const harmonyNote = HARMONY_THIRD[note];
+    if (harmonyNote) playNote(NOTE_FREQ[harmonyNote], t, dur, "sine", 0.14);
+    t += dur;
+  });
+}
+
+function stopMelody(){
+  activeOscillators.forEach(osc => { try { osc.stop(); } catch (e) {} });
+  activeOscillators = [];
+}
+
+const soundBtn = document.getElementById("soundBtn");
+soundBtn.addEventListener("click", () => {
+  playMelody();
+  soundBtn.textContent = "🔁 Repetir música";
+});
+
+(function tryAutoplay(){
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  if (ctx.state !== "suspended"){
+    audioCtx = ctx;
+    playMelody();
+    soundBtn.textContent = "🔁 Repetir música";
+  }
+})();
+
+renderMailTable();
+</script>
+</body>
+</html>
